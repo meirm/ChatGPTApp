@@ -2,6 +2,9 @@
 
 This project is a React Native application designed to interface with Large Language Models (LLMs) like "LM Studio" running on a local server. It leverages the native speech-to-text capabilities of smartphones to provide a seamless chat experience with AI.
 
+![ChatGPTApp](assets/chatgptapp_screenshot.png)
+![ChatGPTApp settings](assets/settings_screenshot.png)
+
 ## Features
 
 - **Chat Interface**: Simple and intuitive chat interface between the user and the AI bot.
