@@ -1,5 +1,8 @@
 # React Native Chatbot App
 
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.dev/client)
+
+
 This project is a React Native application designed to interface with Large Language Models (LLMs) like "LM Studio" running on a local server. It leverages the native speech-to-text capabilities of smartphones to provide a seamless chat experience with AI.
 
 ![ChatGPTApp](assets/chatgptapp_screenshot.png)
