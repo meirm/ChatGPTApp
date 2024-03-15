@@ -6,6 +6,7 @@ import DropdownComponent from './components/system_messages';
 import { Slider } from '@react-native-assets/slider'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import Streaming from './components/streaming'
 import postData from './components/openai'
 import { loadSettings, saveSettings } from './components/settings'
 // For the testing purposes, you should probably use https://github.com/uuidjs/uuid
@@ -177,6 +178,16 @@ const App = () => {
     </SafeAreaProvider>
   )
   }
+  if (1 == 1){
+    // Implement what happens when the chat screen is shown
+    console.log('Chat screen shown');
+    // For example, show a chat screen if using a navigation library
+    return(<SafeAreaProvider>
+      <View style={styles.container}>
+          <Streaming />
+      </View>
+    </SafeAreaProvider>)
+  }
   return (
     <SafeAreaProvider>
       <View style={styles.container}>
@@ -186,6 +197,7 @@ const App = () => {
           </TouchableOpacity>
         </View>
           <DropdownComponent data={systemPrompts} label="SystemPrompt" onChange={handleSystemPromptSelect}/>
+          <Streaming />
           <TouchableOpacity onPress={()=>{setShowSystemPrompt(!showSystemPrompt)}}><Text style={styles.title}>{selectedSystemPrompt}</Text></TouchableOpacity>
           {selectedSystemPrompt && showSystemPrompt?<View><ScrollView style={styles.sysprompt}><Text selectable={true}>{systemPrompt}</Text></ScrollView>
           </View>:null}          

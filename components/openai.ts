@@ -1,6 +1,3 @@
-import { Message, MessageType } from "@flyerhq/react-native-chat-ui";
-import { Float } from "react-native/Libraries/Types/CodegenTypes";
-
 export const cleanResponse = (response: string) => {
   response = response.split(/<end_of_turn>/)[0];
   return response;
@@ -11,7 +8,7 @@ export const sanitizeText = (text: string) => {
   return text.replace(/[^a-zA-Z0-9]/g, "");
 };
 
-const postData = async (url:string, history: any, message: any, temperature: Float = 0.7, systemPrompt:string = "You are a helpful assistance.") => {
+const postData = async (url:string, history: any, message: any, temperature: number = 0.7, systemPrompt:string = "You are a helpful assistance.") => {
   let messages = [
     {
       role: "system",

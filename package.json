@@ -14,6 +14,7 @@
     "@react-native-assets/slider": "^7.1.1",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-clipboard/clipboard": "^1.13.2",
+    "axios": "^1.6.7",
     "expo": "^49.0.23",
     "expo-build-properties": "~0.8.3",
     "expo-status-bar": "~1.6.0",
@@ -25,6 +26,7 @@
     "react-native-element-dropdown": "^2.10.2",
     "react-native-openai": "^0.6.1",
     "react-native-safe-area-context": "4.6.3",
+    "react-native-sse": "^1.2.1",
     "react-native-storage": "^1.0.1",
     "text-encoding": "^0.7.0"
   },
