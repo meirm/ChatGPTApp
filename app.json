@@ -33,8 +33,14 @@
       }
     },
     "plugins": [[
-      "expo-build-properties", { "android": { "usesCleartextTraffic": false } }
-    ]
-    ]
+      "expo-build-properties", { "android": { "usesCleartextTraffic": true },
+                                "ios":{ 
+                                  "infoPlist": {
+                                    "NSAppTransportSecurity": {
+                                      "NSAllowsArbitraryLoads": true
+                                    }
+                                  } }
+                              }  
+    ]]
   }
 }

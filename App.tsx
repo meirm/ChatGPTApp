@@ -1,5 +1,8 @@
 import { Chat, MessageType } from '@flyerhq/react-native-chat-ui'
 import { View, TouchableOpacity, Text, StyleSheet, TextInput, Button, ScrollView } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { systemPrompts, fetchSystemPrompt } from './components/system_prompts';
+import DropdownComponent from './components/system_messages';
 import { Slider } from '@react-native-assets/slider'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -14,7 +17,11 @@ const uuidv4 = () => {
   })
 }
 
+
 const App = () => {
+  const [selectedSystemPrompt, setSelectedSystemPrompt] = useState(null);
+  const [showSystemPrompt, setShowSystemPrompt] = useState(false);
+
   const [messages, setMessages] = useState<MessageType.Any[]>([])
   const [showSettings, setShowSettings] = useState(false)
   const [temperature, setTemperature] = useState(0.7)
@@ -22,6 +29,26 @@ const App = () => {
   const [url, setUrl] = useState('http://192.168.1.1/v1')
   const user = { id: '06c33e8b-e835-4736-80f4-63f44b66666c' }
   const bot =  { id: '02202200-e835-4736-80f4-63f44b66ff6d' }
+  // const [data, setString] = useState('');
+
+
+  const handleCopyToClipboard = () => {
+    // Implement what happens when you press the copy button
+    console.log('Copy button pressed');
+    // Copy the system prompt to the clipboard
+    // if (selectedSystemPrompt){
+    //   // Clipboard.setString("hello");
+    // }
+  };
+
+  const handleSystemPromptSelect = (selectedItem:any, index:number) => {
+    setSelectedSystemPrompt(selectedItem);
+    console.log('Fetching system prompt:', selectedItem);
+    fetchSystemPrompt(selectedItem).then((prompt) => {
+      setSystemPrompt(prompt);
+      console.log('Selected system prompt:', prompt);
+    })
+  };
 
   const resetDefaultSettings = () => {
     setUrl('http://192.168.2.1/v1')
@@ -158,6 +185,10 @@ const App = () => {
             <Text style={styles.settingsButtonText}>{url}</Text>
           </TouchableOpacity>
         </View>
+          <DropdownComponent data={systemPrompts} label="SystemPrompt" onChange={handleSystemPromptSelect}/>
+          <TouchableOpacity onPress={()=>{setShowSystemPrompt(!showSystemPrompt)}}><Text style={styles.title}>{selectedSystemPrompt}</Text></TouchableOpacity>
+          {selectedSystemPrompt && showSystemPrompt?<View><ScrollView style={styles.sysprompt}><Text selectable={true}>{systemPrompt}</Text></ScrollView>
+          </View>:null}          
         <Chat messages={messages} onSendPress={handleSendPress} user={user} />
       </View>
     </SafeAreaProvider>
@@ -173,20 +204,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 60, // Adjust the height as needed
+    height: 80, // Adjust the height as needed
     justifyContent: 'center',
     alignItems: 'flex-end',
     paddingRight: 20, // Padding to the right for the settings button
+    // Padding to the top for the settings button
     backgroundColor: '#f7f7f7', // Optional: change the background color as needed
   },
   settingsButton: {
     // Styles for the settings button
-    paddingTop: 20, // Adjust the padding as needed
+    paddingTop: 60, // Adjust the padding as needed
   },
   settingsButtonText: {
     fontSize: 18, // Adjust the font size as needed
     color: '#007bff', // Adjust the text color as needed
   },
+  sysprompt:{
+    fontSize: 12,
+    color: '#007bff',
+    maxHeight: '80%',
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+  }
 });
 
 export default App
