@@ -1,30 +1,44 @@
-import { useEffect, useState, useRef } from "react";
-import { Text, View } from "react-native";
 import EventSource from "react-native-sse";
 
 const OpenAIToken = '[Your OpenAI token]';
 
-export default function Streaming() {
-  const [text, setText] = useState<string>("Loading...");
-  const initialized = useRef(false);
-  const [messages, setMessages] = useState([
+const postDataStream = async (url:string, history: any, message: any, temperature: number = 0.7, systemPrompt:string = "You are a helpful assistance.", callback: any) => {
+  let messages = [
     {
       role: "system",
-      content: "You are a helpful assistant.",
+      content: systemPrompt,
     },
-    {
-      role: "user",
-      content: "What is the meaning of life?",
-    },
-  ]);
-  useEffect(() => {
-    if (initialized.current) {
-      return; // If already initialized, do nothing
+  ];
+  let text = "";
+
+  try {
+    // Construct messages array from history and the new message
+    if (history.length > 0) {
+      // Directly concatenate the filtered and mapped history messages to the existing messages
+      const historyMessages = history
+        .map((msg: { author: { id: string; }; text: any; }) => (
+             {
+          role:
+            msg.author.id === "06c33e8b-e835-4736-80f4-63f44b66666c"
+              ? "user"
+              : "assistant",
+          content: msg.text,
+        }));
+        // we need to reverse the order of the history messages
+        historyMessages.reverse();
+      messages = [...messages, ...historyMessages]; // Correctly spread historyMessages
+      console.log("History", messages);
+    }else{
+        console.log("No history")
     }
-    initialized.current = true; // Mark as initialized
+
+    // Add the new message at the end of messages array
+    if (message.text) {
+      messages.push({ role: "user", content: message.text });
+    }
 
     const es = new EventSource(
-      "http://192.168.0.12:1234/v1/chat/completions",
+      url + "/chat/completions",
       {
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +51,7 @@ export default function Streaming() {
           messages: messages,
           max_tokens: 600,
           n: 1,
-          temperature: 0.7,
+          temperature: temperature,
           stream: true,
         }),
         pollingInterval: 0, // Remember to set pollingInterval to 0 to disable reconnections
@@ -46,7 +60,7 @@ export default function Streaming() {
 
     es.addEventListener("open", () => {
       console.log("Connection opened");
-      setText("");
+      text = "";
     });
 
     es.addEventListener("message", (event) => {
@@ -54,13 +68,16 @@ export default function Streaming() {
       if (event.data !== "[DONE]") {
         const data = JSON.parse(event.data);
         if (data.choices[0].finish_reason === "stop"){
-          setText((text) => text + "\n");
+          text += "\n";
+          callback(true, null);
           console.log("Connection closing. Reason: Empty response.");
           es.removeAllEventListeners();
           es.close();
         }else{          
           if (data.choices[0].delta.content !== undefined) {
-              setText((text) => text + data.choices[0].delta.content);
+               const delta =  data.choices[0].delta.content;
+              text += delta;
+               callback(false, text);
           }
         }
       }else{
@@ -70,16 +87,11 @@ export default function Streaming() {
       }
     });
 
-    // return () => {
-    //   es.removeAllEventListeners();
-    //   es.close();
-    //   console.log("Connection closed.");
-    // };
-  }, []);
-
-  return (
-    <View>
-      <Text>{text}</Text>
-    </View>
-  );
+    return text;
+  } catch (error) {
+    console.error("There was a problem with your fetch operation:", error);
+    throw error; // Rethrow the error to handle it in the calling context
+  }
 }
+
+export default postDataStream;

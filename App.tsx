@@ -6,7 +6,7 @@ import DropdownComponent from './components/system_messages';
 import { Slider } from '@react-native-assets/slider'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import Streaming from './components/streaming'
+import postDataStream from './components/streaming'
 import postData from './components/openai'
 import { loadSettings, saveSettings } from './components/settings'
 // For the testing purposes, you should probably use https://github.com/uuidjs/uuid
@@ -20,6 +20,7 @@ const uuidv4 = () => {
 
 
 const App = () => {
+  const useStreaming = true
   const [selectedSystemPrompt, setSelectedSystemPrompt] = useState(null);
   const [showSystemPrompt, setShowSystemPrompt] = useState(false);
 
@@ -85,6 +86,37 @@ const App = () => {
     console.log('Settings button pressed');
     // For example, navigate to a settings screen if using a navigation library
   };
+
+  const  handleSendPressStream = async(message: MessageType.PartialText) => {
+    const textMessage: MessageType.Text = {
+      author: user,
+      createdAt: Date.now(),
+      id: uuidv4(),
+      text: message.text,
+      type: 'text',
+    }
+    // addMessage(textMessage)
+    const replyMessage: MessageType.Text = {
+      author: bot,
+      createdAt: Date.now(),
+      id: uuidv4(),
+      text: "...",
+      type: 'text',
+    }
+
+    const updateReplyMessage = (done:boolean, delta: string) => {
+      if (!done){
+        replyMessage.text = delta
+        setMessages((previousMessages)=>{ previousMessages[0] = replyMessage; return [...previousMessages]})
+      }
+    };
+    setMessages((previousMessages)=>[replyMessage, textMessage, ...previousMessages])
+    const response = await postDataStream(url, messages,textMessage, temperature, systemPrompt, updateReplyMessage);
+    replyMessage.text = response
+    // replace the first message with the new message
+
+    setMessages((previousMessages)=>{ previousMessages[0] = replyMessage; return [...previousMessages]})
+  }
 
   const  handleSendPress = async(message: MessageType.PartialText) => {
     const textMessage: MessageType.Text = {
@@ -178,13 +210,22 @@ const App = () => {
     </SafeAreaProvider>
   )
   }
-  if (1 == 1){
+  if (useStreaming){
     // Implement what happens when the chat screen is shown
     console.log('Chat screen shown');
     // For example, show a chat screen if using a navigation library
     return(<SafeAreaProvider>
       <View style={styles.container}>
-          <Streaming />
+        <View style={styles.header}>
+          <TouchableOpacity onPress={()=>{setShowSettings(true)}} style={styles.settingsButton}>
+            <Text style={styles.settingsButtonText}>{url}</Text>
+          </TouchableOpacity>
+        </View>
+          <DropdownComponent data={systemPrompts} label="SystemPrompt" onChange={handleSystemPromptSelect}/>
+            <TouchableOpacity onPress={()=>{setShowSystemPrompt(!showSystemPrompt)}}><Text style={styles.title}>{selectedSystemPrompt}</Text></TouchableOpacity>
+          {selectedSystemPrompt && showSystemPrompt?<View><ScrollView style={styles.sysprompt}><Text selectable={true}>{systemPrompt}</Text></ScrollView>
+          </View>:null}          
+        <Chat messages={messages} onSendPress={handleSendPressStream} user={user} />
       </View>
     </SafeAreaProvider>)
   }
@@ -197,7 +238,6 @@ const App = () => {
           </TouchableOpacity>
         </View>
           <DropdownComponent data={systemPrompts} label="SystemPrompt" onChange={handleSystemPromptSelect}/>
-          <Streaming />
           <TouchableOpacity onPress={()=>{setShowSystemPrompt(!showSystemPrompt)}}><Text style={styles.title}>{selectedSystemPrompt}</Text></TouchableOpacity>
           {selectedSystemPrompt && showSystemPrompt?<View><ScrollView style={styles.sysprompt}><Text selectable={true}>{systemPrompt}</Text></ScrollView>
           </View>:null}          
