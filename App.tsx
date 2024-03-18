@@ -88,6 +88,7 @@ const App = () => {
   };
 
   const  handleSendPressStream = async(message: MessageType.PartialText) => {
+    const model = "llama2:chat"
     const textMessage: MessageType.Text = {
       author: user,
       createdAt: Date.now(),
@@ -111,7 +112,7 @@ const App = () => {
       }
     };
     setMessages((previousMessages)=>[replyMessage, textMessage, ...previousMessages])
-    const response = await postDataStream(url, messages,textMessage, temperature, systemPrompt, updateReplyMessage);
+    const response = await postDataStream(url, model, messages,textMessage, temperature, systemPrompt, updateReplyMessage);
     replyMessage.text = response
     // replace the first message with the new message
 

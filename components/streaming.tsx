@@ -1,8 +1,8 @@
 import EventSource from "react-native-sse";
 
 const OpenAIToken = '[Your OpenAI token]';
-
-const postDataStream = async (url:string, history: any, message: any, temperature: number = 0.7, systemPrompt:string = "You are a helpful assistance.", callback: any) => {
+//http://localhost:11434/v1
+const postDataStream = async (url:string, model:string, history: any, message: any, temperature: number = 0.7, systemPrompt:string = "You are a helpful assistance.", callback: any) => {
   let messages = [
     {
       role: "system",
@@ -47,7 +47,7 @@ const postDataStream = async (url:string, history: any, message: any, temperatur
         method: "POST",
         // Remember to read the OpenAI API documentation to set the correct body
         body: JSON.stringify({
-          model: "gpt-3.5-turbo-0125",
+          model: model,
           messages: messages,
           max_tokens: 600,
           n: 1,
