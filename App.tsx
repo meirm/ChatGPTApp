@@ -22,8 +22,9 @@ const uuidv4 = () => {
 const App = () => {
   const useStreaming = true
   const [selectedSystemPrompt, setSelectedSystemPrompt] = useState(null);
+  const [model, setModel] = useState('llama2:chat' as string)
   const [showSystemPrompt, setShowSystemPrompt] = useState(false);
-
+  const [maxTokens, setMaxTokens] = useState(600)
   const [messages, setMessages] = useState<MessageType.Any[]>([])
   const [showSettings, setShowSettings] = useState(false)
   const [temperature, setTemperature] = useState(0.7)
@@ -63,7 +64,6 @@ const App = () => {
       console.log('Loaded settings:', settings);
       // Here, you could set the settings in the state or do something else with them
       setUrl(settings.url)
-      setSystemPrompt(settings.systemPrompt)
       setTemperature(settings.temperature)
     } else {
       console.log('No settings found, initializing with defaults.');
@@ -75,6 +75,9 @@ const App = () => {
     (async () => {
     await loadDefaultSettings()
     })()
+    setSelectedSystemPrompt("ai");
+    fetchSystemPrompt("ai").then((prompt: string) => {
+      setSystemPrompt(prompt);})
   }, [])
 
   const addMessage = (message: MessageType.Any) => {
@@ -88,7 +91,6 @@ const App = () => {
   };
 
   const  handleSendPressStream = async(message: MessageType.PartialText) => {
-    const model = "llama2:chat"
     const textMessage: MessageType.Text = {
       author: user,
       createdAt: Date.now(),
@@ -112,7 +114,7 @@ const App = () => {
       }
     };
     setMessages((previousMessages)=>[replyMessage, textMessage, ...previousMessages])
-    const response = await postDataStream(url, model, messages,textMessage, temperature, systemPrompt, updateReplyMessage);
+    const response = await postDataStream(url, model, maxTokens, messages,textMessage, temperature, systemPrompt, updateReplyMessage);
     replyMessage.text = response
     // replace the first message with the new message
 
@@ -157,8 +159,8 @@ const App = () => {
         <View>
           <Text style={styles.title}>Settings</Text>
         </View>
-        <View><Text>System Prompt:</Text></View>
-        <View><TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: 300}} value={systemPrompt} onChangeText={prompt => setSystemPrompt(prompt)}/></View>
+        <View><Text>Ollama model:</Text></View>
+        <View><TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: 300, paddingLeft: 20}} value={model} onChangeText={newModel => setModel(newModel)}/></View>
         <View><Text>Temperature:</Text></View>
         <View style={{flexDirection: 'row', paddingLeft: 20}}>
           <View style={{ flexDirection: 'col', justifyContent: 'space-around', alignItems: 'left', paddingBottom: 20 }}>
@@ -174,6 +176,23 @@ const App = () => {
           </View>
           <View style={{ flexDirection: 'col', justifyContent: 'space-around', alignItems: 'right', paddingBottom: 20 }}>
             <Text>    {temperature}</Text>
+          </View>
+        </View>
+        <View><Text>Max Tokens:</Text></View>
+        <View style={{flexDirection: 'row', paddingLeft: 20}}>
+          <View style={{ flexDirection: 'col', justifyContent: 'space-around', alignItems: 'left', paddingBottom: 20 }}>
+            <Slider
+            style={{width: 200, height: 40}}
+            minimumValue={16}
+            maximumValue={4096}
+            step={16}
+            value={maxTokens}
+            onValueChange={value => setMaxTokens(value)}
+            minimumTrackTintColor="#000000"
+            maximumTrackTintColor="#000000" />
+          </View>
+          <View style={{ flexDirection: 'col', justifyContent: 'space-around', alignItems: 'right', paddingBottom: 20 }}>
+            <Text>    {maxTokens}</Text>
           </View>
         </View>
       <ScrollView>

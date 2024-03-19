@@ -2,7 +2,7 @@ import EventSource from "react-native-sse";
 
 const OpenAIToken = '[Your OpenAI token]';
 //http://localhost:11434/v1
-const postDataStream = async (url:string, model:string, history: any, message: any, temperature: number = 0.7, systemPrompt:string = "You are a helpful assistance.", callback: any) => {
+const postDataStream = async (url:string, model:string, max_tokens: number, history: any, message: any, temperature: number = 0.7, systemPrompt:string = "You are a helpful assistance.", callback: any) => {
   let messages = [
     {
       role: "system",
@@ -49,7 +49,7 @@ const postDataStream = async (url:string, model:string, history: any, message: a
         body: JSON.stringify({
           model: model,
           messages: messages,
-          max_tokens: 600,
+          max_tokens: max_tokens,
           n: 1,
           temperature: temperature,
           stream: true,
