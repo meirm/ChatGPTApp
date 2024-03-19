@@ -1,6 +1,6 @@
 import { Chat, MessageType } from '@flyerhq/react-native-chat-ui'
 import { View, TouchableOpacity, Text, StyleSheet, TextInput, Button, ScrollView } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
+// import Clipboard from '@react-native-clipboard/clipboard';
 import { systemPrompts, fetchSystemPrompt } from './components/system_prompts';
 import DropdownComponent from './components/system_messages';
 import { Slider } from '@react-native-assets/slider'
@@ -55,7 +55,8 @@ const App = () => {
 
   const resetDefaultSettings = () => {
     setUrl('http://192.168.2.1/v1')
-    saveSettings({"url":'http://192.168.2.1/v1'})
+    setTemperature(0.7)
+    saveSettings({"url":'http://192.168.2.1/v1', "temperature": 0.7})
   }
 
   const loadDefaultSettings = async () => {
