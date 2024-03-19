@@ -31,7 +31,7 @@ export const loadSettings = () => {
   });
 };
 
-export const saveSettings = (settings: { url: string; systemPrompt: string; temperature: GLfloat}) => {
+export const saveSettings = (settings: { url: string; temperature: GLfloat}) => {
   // Save the settings to the storage
   storage.save({
     key: 'settings',

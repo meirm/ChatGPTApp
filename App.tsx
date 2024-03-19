@@ -160,7 +160,7 @@ const App = () => {
           <Text style={styles.title}>Settings</Text>
         </View>
         <View><Text>Ollama model:</Text></View>
-        <View><TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: 300, paddingLeft: 20}} value={model} onChangeText={newModel => setModel(newModel)}/></View>
+        <View style={{flexDirection: 'row', padding: 20}}><TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: 300, paddingLeft: 5}} value={model} onChangeText={newModel => setModel(newModel)}/></View>
         <View><Text>Temperature:</Text></View>
         <View style={{flexDirection: 'row', paddingLeft: 20}}>
           <View style={{ flexDirection: 'col', justifyContent: 'space-around', alignItems: 'left', paddingBottom: 20 }}>
@@ -201,13 +201,13 @@ const App = () => {
         </View>
         <View  style={{flexDirection: 'row', padding: 20}}>
           <TextInput
-            style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: 300}}
+            style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: 300, paddingLeft: 5}}
             onChangeText={text => setUrl(text)}
             value={url} />
         </View>
         <View>
             <Button title="Load Default" onPress={()=>{loadDefaultSettings()}}/>
-            <Button title="Save as Default" onPress={()=>{saveSettings({"url":url, "systemPrompt": systemPrompt, "temperature": temperature})}}/>
+            <Button title="Save as Default" onPress={()=>{saveSettings({"url":url, "temperature": temperature})}}/>
             <Button title="Clear Chat History" onPress={()=>{setMessages([])}}/>
         </View>
         <View>
